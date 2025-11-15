@@ -1,0 +1,31 @@
+Metadata-Version: 2.4
+Name: su-bot
+Version: 0.1.0
+Summary: Pipeline for scraping SU.dk content and running local HQE-based RAG.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.26
+Requires-Dist: pydantic>=2.7
+Requires-Dist: typer>=0.12
+Requires-Dist: openai>=1.45
+Requires-Dist: playwright>=1.46
+Requires-Dist: streamlit>=1.36
+Requires-Dist: chromadb>=0.5
+Requires-Dist: sentence-transformers>=3.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7; extra == "dev"
+Requires-Dist: ruff>=0.6; extra == "dev"
+
+# SU BOT
+
+Modular pipeline for scraping SU.dk content, generating hypothetical questions (HQE), embedding them, and serving local RAG-style QA experiences.
+
+## Highlights
+
+- Async Playwright scrapers for link discovery and content extraction.
+- HQE generation with OpenAI responses + deterministic quality/dedup layers.
+- NumPy-based retrieval utilities with shared prompts and console/Streamlit UIs.
+- Typer-powered CLI (`su-bot`) that orchestrates scraping → HQE → embeddings → QA.
+
+See `docs/pipeline.md` for the day-to-day workflow and CLI examples.
+

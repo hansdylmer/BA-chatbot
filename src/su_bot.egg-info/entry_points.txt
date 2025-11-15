@@ -1,0 +1,2 @@
+[console_scripts]
+su-bot = su_bot.cli:main
