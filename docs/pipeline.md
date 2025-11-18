@@ -26,4 +26,4 @@ HQE generation now operates one record per URL: all sections from a page are mer
 - `src/su_bot/config.py` – central configuration dataclasses (paths, models, scraping defaults).
 - `src/su_bot/cli.py` – Typer CLI exposing the end-to-end workflow (`su-bot ...`).
 
-Legacy scripts under `Scraping/` now act as thin wrappers around these shared modules, so existing automation keeps working while the new package interface stays the source of truth.
+Legacy wruth; use the `su-bot` CLI for scraping, HQE generation, embeddings, and console QA. The Streamlit UI (`Scraping/app_streamlit_localqa.py`) still consumes the same saved embeddings if you prefer a browser-based front-end.rapper scripts under `Scraping/` have been removed to keep a single source of t

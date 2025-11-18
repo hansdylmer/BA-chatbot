@@ -9,4 +9,13 @@ Modular pipeline for scraping SU.dk content, generating hypothetical questions (
 - NumPy-based retrieval utilities with shared prompts and console/Streamlit UIs.
 - Typer-powered CLI (`su-bot`) that orchestrates scraping -> HQE -> embeddings -> QA.
 
+## Repository layout
+- `src/su_bot/` - Python package (scraping, HQE, embeddings, RAG, CLI entrypoint).
+- `docs/pipeline.md` - end-to-end workflow and CLI examples.
+- `Scraping/data/` - dated scrape outputs; used by the CLI defaults.
+- `Embeddings/` - local vector DB/index experiments kept for reference.
+- `Scraping/app_streamlit_localqa.py` - optional Streamlit UI on top of saved embeddings.
+
+Legacy one-off scripts have been removed to avoid duplicating the packaged CLI; use `su-bot <command>` for all pipeline steps.
+
 See `docs/pipeline.md` for the day-to-day workflow and CLI examples.

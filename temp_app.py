@@ -26,54 +26,6 @@ from su_bot.rag.search import (
 
 cfg = load_config()
 
-def find_default_artifacts(base_dir: Path) -> Tuple[str, str, str]:
-    """Pick the newest embedding set under the configured data dir."""
-    try:
-        candidates = sorted(base_dir.rglob("*.embeddings.npy"), key=lambda p: p.stat().st_mtime, reverse=True)
-    except FileNotFoundError:
-        return "", "", ""
-
-    if not candidates:
-        return "", "", ""
-
-    emb_path = candidates[0]
-    stem_no_ext = emb_path.name.replace(".embeddings.npy", "")
-    meta_path = emb_path.with_name(f"{stem_no_ext}.meta.json")
-
-    # Heuristic to guess the corpus filename from the embedding prefix
-    if stem_no_ext.endswith(".hqe.v1"):
-        corpus_guess = stem_no_ext.removesuffix(".hqe.v1")
-    elif "_embedded_hqe" in stem_no_ext:
-        corpus_guess = stem_no_ext.replace("_embedded_hqe", "")
-    else:
-        corpus_guess = stem_no_ext
-    corpus_path = emb_path.with_name(f"{corpus_guess}.json")
-
-    return (
-        str(emb_path) if emb_path.exists() else "",
-        str(meta_path) if meta_path.exists() else "",
-        str(corpus_path) if corpus_path.exists() else "",
-    )
-
-default_emb, default_meta, default_corpus = find_default_artifacts(Path(cfg.paths.data_dir))
-
-
-def companions_from_emb(emb_path: str) -> Tuple[str, str]:
-    """Derive matching meta/corpus paths from an embeddings path."""
-    if not emb_path:
-        return "", ""
-    p = Path(emb_path)
-    stem_no_ext = p.name.replace(".embeddings.npy", "")
-    meta = p.with_name(f"{stem_no_ext}.meta.json")
-    if stem_no_ext.endswith(".hqe.v1"):
-        corpus_guess = stem_no_ext.removesuffix(".hqe.v1")
-    elif "_embedded_hqe" in stem_no_ext:
-        corpus_guess = stem_no_ext.replace("_embedded_hqe", "")
-    else:
-        corpus_guess = stem_no_ext
-    corpus = p.with_name(f"{corpus_guess}.json")
-    return str(meta), str(corpus)
-
 
 def infer_embed_model_from_dim(dim: int) -> str:
     if dim == 1536:
@@ -114,10 +66,9 @@ st.title("SU Chatbot - POC/POP")
 
 with st.sidebar:
     st.header("⚙️ Indstillinger")
-    emb_path = st.text_input("Embeddings (.npy)", value=default_emb)
-    derived_meta, derived_corpus = companions_from_emb(emb_path or default_emb)
-    meta_path = st.text_input("Meta (.json)", value=derived_meta or default_meta)
-    corpus_path = st.text_input("Corpus (.json)", value=derived_corpus or default_corpus)
+    emb_path = st.text_input("Embeddings (.npy)")
+    meta_path = st.text_input("Meta (.json)")
+    corpus_path = st.text_input("Corpus (.json)")
     topk = st.slider("Top-K kontekst", min_value=1, max_value=10, value=4)
     min_score = st.slider("Min. score", min_value=-1.0, max_value=1.0, value=-1.0, step=0.05)
     per_section_chars = st.slider("Maks tegn pr. sektion", min_value=200, max_value=2000, value=900, step=50)
@@ -226,7 +177,7 @@ if prompt:
 
         context = make_context(picked, per_section_chars=per_section_chars, total_chars=total_chars)
         instructions = build_instructions(prompt, context)
-        resp = client.responses.create(model=chat_model, input=instructions, stream=False, store=False, temperature=0.8)
+        resp = client.responses.create(model=chat_model, input=instructions, stream=False, store=False)
         answer = (resp.output_text or "").strip()
 
         st.markdown(answer)
@@ -243,3 +194,4 @@ if prompt:
         st.caption(f"Færdig på {took:.2f}s · model: {chat_model} · embed: {st.session_state.embed_model}")
 
         st.session_state.messages.append({"role": "assistant", "content": answer})
+

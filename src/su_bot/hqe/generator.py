@@ -72,7 +72,7 @@ Tekst: \"\"\"{text}\"\"\""""
             {"role": "system", "content": sys_prompt},
             {"role": "user", "content": user_prompt},
         ],
-        temperature=0.3,
+        temperature=0.8,
         stream=False,
         store=False,
     )
