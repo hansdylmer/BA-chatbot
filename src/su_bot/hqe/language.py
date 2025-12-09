@@ -1,16 +1,25 @@
 from __future__ import annotations
 
-import re
+from langdetect import DetectorFactory, LangDetectException, detect
 
-from ..models import Lang
+from ..data_model import Lang
+
+# Make language detection deterministic for the same input
+DetectorFactory.seed = 0
 
 
 def detect_lang(text: str, default: Lang = Lang.da) -> Lang:
-    if any(ch in "æøåÆØÅ" for ch in text):
-        return Lang.da
-    if len(text) < 80:
+    cleaned = (text or "").strip()
+    if not cleaned:
         return default
-    if re.search(r"\b(the|and|is|to|of|you|in|with|can)\b", text.lower()):
+
+    try:
+        code = detect(cleaned)
+    except LangDetectException:
+        return default
+
+    if code.startswith("da"):
+        return Lang.da
+    if code.startswith("en"):
         return Lang.en
     return default
-

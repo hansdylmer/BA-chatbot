@@ -6,8 +6,8 @@ from typing import Optional
 import os
 
 
-DEFAULT_DATA_DIR = Path("Scraping") / "data"
-DEFAULT_EMBED_DIR = Path("Embeddings")
+DEFAULT_DATA_DIR = Path("data")
+DEFAULT_EMBED_DIR = Path("Gammelt")
 
 
 @dataclass(slots=True)

@@ -12,7 +12,7 @@ import typer
 
 from .config import AppConfig, load_config
 from .hqe.generator import build_hqe_sidecar, load_corpus
-from .models import Budget
+from .data_model import Budget
 from .log_utils import setup_logging
 from .embeddings.writer import read_hqe_jsonl, build_embeddings, write_artifacts
 from .scraping.links import scrape_links

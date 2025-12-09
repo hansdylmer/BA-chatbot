@@ -2,14 +2,20 @@ import os
 import json
 from datetime import datetime
 from difflib import unified_diff
+from pathlib import Path
 
 def load_json_content(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
         return json.load(f)
 
-def get_two_latest_content_files(data_dir="./data"):
+def _default_data_dir() -> Path:
+    return Path(__file__).resolve().parents[1] / "data"
+
+
+def get_two_latest_content_files(data_dir=None):
+    base_dir = Path(data_dir) if data_dir else _default_data_dir()
     json_files = []
-    for root, _, files in os.walk(data_dir):
+    for root, _, files in os.walk(base_dir):
         for name in files:
             if name.startswith("links_content_") and name.endswith(".json") and "all_relative" not in name:
                 full_path = os.path.join(root, name)

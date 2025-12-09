@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer
 import chromadb
 
 # === 1. Load JSON document ===
-file_path = "../Scraping/data/links_content_2025-08-04.json"
+file_path = "../data/links_content_2025-08-04.json"
 loader = JSONLoader(  # Loader hver paragraf som et dokument og tilføjer metadata.
     file_path=file_path,
     jq_schema=""".[] | 

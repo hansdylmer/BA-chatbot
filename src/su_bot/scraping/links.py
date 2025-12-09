@@ -27,7 +27,7 @@ class LinkScraper:
         self.cfg = cfg
         self.base_url = cfg.base_url.rstrip("/")
         self.output_dir = paths.dated_subdir(date)
-        self.output_path = self.output_dir / f"all_relative_links_{date}_async.txt"
+        self.output_path = self.output_dir / f"links_{date}.txt"
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.visited: Set[str] = set()
         self.links: Set[str] = set()

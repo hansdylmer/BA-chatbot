@@ -12,7 +12,7 @@ from openai import OpenAI
 
 from ..config import HQEConfig, OpenAIConfig
 from ..log_utils import setup_logging
-from ..models import Budget, Corpus, HQERecord, Lang, Document
+from ..data_model import Budget, Corpus, HQERecord, Lang, Document
 from ..openai_client import get_openai_client
 from .language import detect_lang
 from .quality import quality_filter, dedup_by_text, normalize_q

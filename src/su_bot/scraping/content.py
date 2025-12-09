@@ -12,7 +12,7 @@ from playwright.async_api import async_playwright, Page
 
 from ..config import PathsConfig, ScrapeConfig
 from ..log_utils import setup_logging
-from ..models import Corpus, Document, Section
+from ..data_model import Corpus, Document, Section
 
 
 NOISE_PHRASES = {
@@ -39,11 +39,11 @@ class ContentScraper:
         self.date = date
         self.cfg = cfg
         self.paths = paths
-        self.links_path = paths.dated_subdir(date) / f"all_relative_links_{date}_async.txt"
+        self.links_path = paths.dated_subdir(date) / f"links_{date}.txt"
         if not self.links_path.exists():
             raise FileNotFoundError(f"Link list file not found: {self.links_path}")
         self.base_url = cfg.base_url.rstrip("/")
-        self.output_path = paths.dated_subdir(date) / f"links_content_{date}_async.json"
+        self.output_path = paths.dated_subdir(date) / f"links_content_{date}.json"
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
         with self.links_path.open("r", encoding="utf-8") as f:
             self.links = [line.strip() for line in f if line.strip()]
