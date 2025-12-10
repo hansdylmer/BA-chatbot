@@ -54,9 +54,9 @@ def find_default_artifacts(base_dir: Path) -> Tuple[str, str, str]:
 
 default_emb, default_meta, default_corpus = find_default_artifacts(Path(cfg.paths.data_dir))
 
-default_emb = r"data\2025-09-17\2025-09-17-HQE.v1.embeddings.npy"
-default_meta = r"data\2025-09-17\2025-09-17-HQE.v1.meta.json"
-default_corpus = r"data\2025-09-17\links_content_2025-09-17_async.json"
+default_emb = str(Path(cfg.paths.data_dir) / "2025-09-17" / "2025-09-17-HQE.v1.embeddings.npy")
+default_meta = str(Path(cfg.paths.data_dir) / "2025-09-17" / "2025-09-17-HQE.v1.meta.json")
+default_corpus = str(Path(cfg.paths.data_dir) / "2025-09-17" / "links_content_2025-09-17_async.json")
 def companions_from_emb(emb_path: str) -> Tuple[str, str]:
     """Derive matching meta/corpus paths from an embeddings path."""
     if not emb_path:
