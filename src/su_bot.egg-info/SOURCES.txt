@@ -3,8 +3,8 @@ pyproject.toml
 src/su_bot/__init__.py
 src/su_bot/cli.py
 src/su_bot/config.py
-src/su_bot/log_utils.py
 src/su_bot/data_model.py
+src/su_bot/log_utils.py
 src/su_bot/openai_client.py
 src/su_bot.egg-info/PKG-INFO
 src/su_bot.egg-info/SOURCES.txt

@@ -27,6 +27,9 @@ su-bot = "su_bot.cli:main"
 [tool.rye]
 managed = false
 
+[tool.rye.scripts]
+install-playwright-chromium = "python -m playwright install chromium"
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["tests"]

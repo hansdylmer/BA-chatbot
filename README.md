@@ -1,5 +1,31 @@
 # SU BOT
 
+## How to Build
+- Ensure Python 3.11+ is installed.
+- (Recommended) create and activate a virtual environment:
+  - Windows PowerShell:
+    ```
+    python -m venv .venv
+    .\.venv\Scripts\Activate.ps1
+    ```
+  - macOS/Linux:
+    ```
+    python -m venv .venv
+    source .venv/bin/activate
+    ```
+- Install the package and dependencies in editable mode:
+  ```
+  pip install -e .
+  ```
+- Install Playwright browsers for scraping:
+  ```
+  python -m playwright install chromium
+  ```
+- Verify the CLI is available:
+  ```
+  su-bot --help
+  ```
+
 Modular pipeline for scraping SU.dk content, generating hypothetical questions (HQE), embedding them, and serving local RAG-style QA experiences.
 
 ## Highlights

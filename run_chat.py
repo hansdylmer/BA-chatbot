@@ -54,7 +54,9 @@ def find_default_artifacts(base_dir: Path) -> Tuple[str, str, str]:
 
 default_emb, default_meta, default_corpus = find_default_artifacts(Path(cfg.paths.data_dir))
 
-
+default_emb = r"data\2025-09-17\2025-09-17-HQE.v1.embeddings.npy"
+default_meta = r"data\2025-09-17\2025-09-17-HQE.v1.meta.json"
+default_corpus = r"data\2025-09-17\links_content_2025-09-17_async.json"
 def companions_from_emb(emb_path: str) -> Tuple[str, str]:
     """Derive matching meta/corpus paths from an embeddings path."""
     if not emb_path:
@@ -114,7 +116,7 @@ with st.sidebar:
     emb_path = st.text_input("Embeddings (.npy)", value=default_emb)
     derived_meta, derived_corpus = companions_from_emb(emb_path or default_emb)
     meta_path = st.text_input("Meta (.json)", value=derived_meta or default_meta)
-    corpus_path = st.text_input("Corpus (.json)", value=derived_corpus or default_corpus)
+    corpus_path = st.text_input("Corpus (.json)", value=default_corpus or derived_corpus)
     topk = st.slider("Top-K kontekst", min_value=1, max_value=10, value=4)
     min_score = st.slider("Min. score", min_value=-1.0, max_value=1.0, value=-1.0, step=0.05)
     per_section_chars = st.slider("Maks tegn pr. sektion", min_value=200, max_value=2000, value=900, step=50)
