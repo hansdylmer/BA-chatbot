@@ -209,7 +209,7 @@ if prompt:
 
         context = make_context(picked, per_section_chars=per_section_chars, total_chars=total_chars)
         instructions = build_instructions(prompt, context)
-        resp = client.responses.create(model=chat_model, input=instructions, stream=False, store=False, temperature=0.8)
+        resp = client.responses.create(model=chat_model, input=instructions, stream=False, store=False, temperature=0.0)
         answer = (resp.output_text or "").strip()
 
         st.markdown(answer)
