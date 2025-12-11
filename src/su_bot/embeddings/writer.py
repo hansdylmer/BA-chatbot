@@ -115,7 +115,7 @@ def write_artifacts(artifacts: EmbeddingArtifacts, out_prefix: Path) -> Tuple[Pa
     out_meta = out_prefix.with_suffix(".meta.json")
     out_emb.parent.mkdir(parents=True, exist_ok=True)
     np.save(out_emb, artifacts.matrix)
-    out_meta.write_text(json.dumps(artifacts.meta, ensure_ascii=False), encoding="utf-8")
+    out_meta.write_text(json.dumps(artifacts.meta, ensure_ascii=False, indent=2), encoding="utf-8")
     logging.info("Saved embeddings → %s (shape=%s)", out_emb, artifacts.matrix.shape)
     logging.info("Saved metadata → %s", out_meta)
     return out_emb, out_meta

@@ -24,7 +24,7 @@ class OpenAIConfig:
     api_key: Optional[str] = field(default_factory=lambda: os.getenv("OPENAI_API_KEY"))
     chat_model: str = "gpt-4o-mini"
     embedding_model: str = "text-embedding-3-small"
-
+    temperature: float = 0.8
     def require_key(self) -> str:
         if not self.api_key:
             raise RuntimeError("OPENAI_API_KEY is not set in the environment.")

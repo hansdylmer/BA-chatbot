@@ -27,36 +27,20 @@ from su_bot.rag.search import (
 cfg = load_config()
 
 def find_default_artifacts(base_dir: Path) -> Tuple[str, str, str]:
-    """Pick the newest embedding set under the configured data dir."""
-    try:
-        candidates = sorted(base_dir.rglob("*.embeddings.npy"), key=lambda p: p.stat().st_mtime, reverse=True)
-    except FileNotFoundError:
-        return "", "", ""
+    """Pick the newest emb/meta/corpus artifacts under the configured data dir."""
+    def newest(pattern: str) -> str:
+        try:
+            return str(max(base_dir.rglob(pattern), key=lambda p: p.stat().st_mtime))
+        except (ValueError, FileNotFoundError):
+            return ""
 
-    if not candidates:
-        return "", "", ""
-
-    emb_path = candidates[0]
-    stem_no_ext = emb_path.name.replace(".embeddings.npy", "")
-    meta_path = emb_path.with_name(f"{stem_no_ext}.meta.json")
-
-    # Heuristic to guess the corpus filename from the embedding prefix
-    if stem_no_ext.endswith(".hqe.v1"):
-        corpus_guess = stem_no_ext.removesuffix(".hqe.v1")
-    elif "_embedded_hqe" in stem_no_ext:
-        corpus_guess = stem_no_ext.replace("_embedded_hqe", "")
-    else:
-        corpus_guess = stem_no_ext
-    corpus_path = emb_path.with_name(f"{corpus_guess}.json")
-
-    return (str(emb_path), str(meta_path), str(corpus_path))
+    emb_path = newest("*.embeddings.npy")
+    meta_path = newest("*.meta.json")
+    corpus_path = newest("links_content*.json") or newest("*.json")
+    return (emb_path, meta_path, corpus_path)
 
 
 default_emb, default_meta, default_corpus = find_default_artifacts(Path(cfg.paths.data_dir))
-### TODO Change to automatically find the newest emb, meta and corpus files
-default_emb = str(Path(cfg.paths.data_dir) / "2025-09-17" / "2025-09-17-HQE.v1.embeddings.npy")
-default_meta = str(Path(cfg.paths.data_dir) / "2025-09-17" / "2025-09-17-HQE.v1.meta.json")
-default_corpus = str(Path(cfg.paths.data_dir) / "2025-09-17" / "links_content_2025-09-17_async.json")
 def companions_from_emb(emb_path: str) -> Tuple[str, str]:
     """Derive matching meta/corpus paths from an embeddings path."""
     if not emb_path:
