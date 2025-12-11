@@ -120,42 +120,50 @@ def build_hqe_sidecar(
         else:
             lang = detect_lang(doc_text)
 
-        n = q_budget(doc_text, budget)
-        qs_raw = gen_hqe_questions_llm(
-            doc.title,
-            "(samlet dokument)",
-            doc_text,
-            n=n,
-            language=lang,
-            max_chars=cfg.max_chars,
-            model=openai_cfg.chat_model,
-            client=llm,
-        )
+        def add_record(section_index: int, heading: str, text: str) -> None:
+            if not text.strip():
+                return
 
-        qs_q = quality_filter(qs_raw)
-        qs_final = dedup_by_text(qs_q, thresh=cfg.dedup_jaccard)
-        if not qs_final:
-            fallback = "Hvad er hovedreglen?" if lang == Lang.da else "What is the main rule?"
-            qs_final = qs_q[:1] or qs_raw[:1] or [fallback]
+            n = q_budget(text, budget)
+            qs_raw = gen_hqe_questions_llm(
+                doc.title,
+                heading,
+                text,
+                n=n,
+                language=lang,
+                max_chars=cfg.max_chars,
+                model=openai_cfg.chat_model,
+                client=llm,
+            )
 
-        record = HQERecord(
-            doc_id=doc.doc_id,
-            section_index=-1,
-            language=lang,
-            gen_model=openai_cfg.chat_model,
-            prompt_version=cfg.prompt_version,
-            generated_at=now,
-            questions=qs_final,
-            meta={
-                "source": str(doc.link),
-                "page_title": doc.title,
-                "section_heading": "(samlet dokument)",
-                "combined_headings": headings,
-                "aggregated_content": doc_text,
-                "section_char_len": len(doc_text),
-            },
-        )
-        out.append(record.model_dump())
+            qs_q = quality_filter(qs_raw)
+            qs_final = dedup_by_text(qs_q, thresh=cfg.dedup_jaccard)
+            if not qs_final:
+                fallback = "Hvad er hovedreglen?" if lang == Lang.da else "What is the main rule?"
+                qs_final = qs_q[:1] or qs_raw[:1] or [fallback]
+
+            record = HQERecord(
+                doc_id=doc.doc_id,
+                section_index=section_index,
+                language=lang,
+                gen_model=openai_cfg.chat_model,
+                prompt_version=cfg.prompt_version,
+                generated_at=now,
+                questions=qs_final,
+                meta={
+                    "source": str(doc.link),
+                    "page_title": doc.title,
+                    "section_heading": heading,
+                    "combined_headings": headings,
+                    "aggregated_content": text,
+                    "section_char_len": len(text),
+                },
+            )
+            out.append(record.model_dump())
+
+        add_record(-1, "(samlet dokument)", doc_text)
+        for idx, sec in enumerate(doc.sections):
+            add_record(idx, sec.heading or "(ingen overskrift)", sec.content)
 
         processed += 1
         if processed % log_every == 0 or processed == total_docs:

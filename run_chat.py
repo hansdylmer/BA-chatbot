@@ -53,7 +53,7 @@ def find_default_artifacts(base_dir: Path) -> Tuple[str, str, str]:
 
 
 default_emb, default_meta, default_corpus = find_default_artifacts(Path(cfg.paths.data_dir))
-
+### TODO Change to automatically find the newest emb, meta and corpus files
 default_emb = str(Path(cfg.paths.data_dir) / "2025-09-17" / "2025-09-17-HQE.v1.embeddings.npy")
 default_meta = str(Path(cfg.paths.data_dir) / "2025-09-17" / "2025-09-17-HQE.v1.meta.json")
 default_corpus = str(Path(cfg.paths.data_dir) / "2025-09-17" / "links_content_2025-09-17_async.json")

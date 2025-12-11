@@ -122,8 +122,8 @@ def cli_qa_console(
     emb: Path = typer.Argument(..., exists=True, readable=True, help="Embeddings .npy path"),
     meta: Path = typer.Argument(..., exists=True, readable=True, help=".meta.json path"),
     corpus: Path = typer.Argument(..., exists=True, readable=True, help="Corpus JSON path"),
-    topk: int = typer.Option(4, help="Number of entries to retrieve"),
-    min_score: float = typer.Option(-1.0, help="Optional minimum similarity score"),
+    topk: int = typer.Option(10, help="Number of entries to retrieve"),
+    min_score: float = typer.Option(0.6, help="Optional minimum similarity score"),
     chat_model: Optional[str] = typer.Option(None, help="Override chat model"),
 ):
     """Interactive QA session in the terminal."""
