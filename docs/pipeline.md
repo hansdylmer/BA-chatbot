@@ -13,7 +13,7 @@ su-bot embed-hqe data/2025-09-17/links_content_2025-09-17_async.hqe.v1.jsonl dat
 su-bot qa-console data/2025-09-17/links_content_2025-09-17_async.hqe.v1.embeddings.npy data/2025-09-17/links_content_2025-09-17_async.hqe.v1.meta.json data/2025-09-17/links_content_2025-09-17_async.json
 ```
 
-All OpenAI calls rely on the standard `OPENAI_API_KEY` environment variable. You can override model names inline with `--model`.
+All OpenAI calls rely on the standard `OPENAI_API_KEY` environment variable. You can override model names inline with `--model`. The HQE generator now defaults to `--lang-strategy auto` (language detection per document).
 
 HQE generation now operates one record per URL: all sections from a page are merged (within the `max_chars` budget) before we ask the LLM for questions, so metadata refers to `(doc_id, -1)` when you embed or query later.
 

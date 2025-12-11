@@ -4,9 +4,8 @@ import datetime
 import json
 import logging
 import time
-import hashlib
 from pathlib import Path
-from typing import List, Dict, Any, Iterable, Optional
+from typing import List, Dict, Any, Optional
 
 from openai import OpenAI
 
@@ -91,14 +90,6 @@ Tekst: \"\"\"{text}\"\"\""""
     return arr[:n]
 
 
-def sha1(text: str) -> str:
-    return hashlib.sha1(text.encode("utf-8")).hexdigest()
-
-
-def section_hash(text: str) -> str:
-    return f"sha1:{sha1(text)}"
-
-
 def build_hqe_sidecar(
     corpus: Corpus,
     *,
@@ -161,7 +152,6 @@ def build_hqe_sidecar(
                 "section_heading": "(samlet dokument)",
                 "combined_headings": headings,
                 "aggregated_content": doc_text,
-                "text_hash": section_hash(doc_text),
                 "section_char_len": len(doc_text),
             },
         )

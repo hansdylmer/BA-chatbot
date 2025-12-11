@@ -67,7 +67,7 @@ def cli_scrape_content(
 def cli_hqe_generate(
     corpus: Path = typer.Argument(..., exists=True, readable=True, help="Scraped corpus JSON"),
     out: Path = typer.Argument(..., help="Output JSONL path for HQE records"),
-    lang_strategy: str = typer.Option("da", help="Language strategy (auto|da|en)"),
+    lang_strategy: str = typer.Option("auto", help="Language strategy (auto|da|en)"),
     min_questions: int = typer.Option(None, help="Override minimum questions per document"),
     mid_questions: int = typer.Option(None, help="Override medium questions per document"),
     max_questions: int = typer.Option(None, help="Override max questions per document"),

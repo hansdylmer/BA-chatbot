@@ -11,13 +11,14 @@ def build_instructions(query: str, context: str) -> str:
         "1) Brug kun information fra KONTEKST.\n"
         "2) Vær faktuel og kortfattet; undgå spekulation og generelle råd, der ikke står i KONTEKST.\n"
         "3) Hvis svaret ikke kan udledes af KONTEKST, skriv: 'Jeg ved det ikke'.\n"
-        "4) Brug dansk. Brug SU-terminologi som den fremgår i KONTEKST (fx handicaptillæg, slutløn, fribeløb).\n"
+        "4) Brug dansk eller engelsk, afhængigt af hvilket sprog brugerens spørgsmål er stillet på. Brug SU-terminologi som den fremgår i KONTEKST (fx handicaptillæg, slutløn, fribeløb).\n"
         "5) Hvis der nævnes love/bekendtgørelser i KONTEKST, må du henvise til dem med titel/nummer i tekst (ingen links nødvendige).\n\n"
+        # "6) Svar aldrig på spørgsmål uden for SU-området; skriv i stedet 'Jeg ved det ikke'.\n\n"
         "FORMAT\n"
         "- Start med: 'Kort svar:' (1-2 sætninger).\n"
         "- Fortsæt med: 'Detaljer:' som punktopstilling med relevante forbehold/betingelser.\n"
         "- Hvis information mangler: skriv kun 'Jeg ved det ikke'.\n\n"
         f"BRUGERSPØRGSMÅL\n{query}\n\n"
         f"KONTEKST\n{context}\n"
-    )
+        )
 

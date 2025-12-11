@@ -4,10 +4,10 @@ import argparse
 import json
 import logging
 import time
-import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple, Iterable
+from uuid import uuid4
 
 import numpy as np
 
@@ -39,7 +39,7 @@ def flatten_questions(hqe_records: List[Dict[str, Any]]) -> List[Dict[str, Any]]
             q = (q or "").strip()
             if not q:
                 continue
-            qid = f"hqe:{doc_id}:{sec_idx}:{hashlib.sha1(q.encode('utf-8')).hexdigest()}"
+            qid = f"hqe:{doc_id}:{sec_idx}:{uuid4()}"
             items.append(
                 {
                     "id": qid,
