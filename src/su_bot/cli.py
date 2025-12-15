@@ -25,6 +25,7 @@ from .rag.search import (
     embed_query,
     topk_dot,
 )
+from .rag.bm25 import build_bm25_index_from_meta, reciprocal_rank_fusion
 from .rag.chat import answer_query
 
 
@@ -124,14 +125,20 @@ def cli_qa_console(
     corpus: Path = typer.Argument(..., exists=True, readable=True, help="Corpus JSON path"),
     topk: int = typer.Option(10, help="Number of entries to retrieve"),
     min_score: float = typer.Option(0.6, help="Optional minimum similarity score"),
+    retriever: str = typer.Option("vector", help="Retriever strategy (vector|bm25|hybrid)"),
     chat_model: Optional[str] = typer.Option(None, help="Override chat model"),
 ):
     """Interactive QA session in the terminal."""
     cfg = load_config()
     if chat_model:
         cfg.openai.chat_model = chat_model
+    retriever = retriever.lower()
+    if retriever not in {"vector", "bm25", "hybrid"}:
+        raise typer.BadParameter("retriever must be one of: vector, bm25, hybrid")
+
     matrix = load_np_embeddings(emb)
     meta_rows = load_meta_file(meta)
+    bm25_index = build_bm25_index_from_meta(meta_rows) if retriever in {"bm25", "hybrid"} else None
     lut = build_section_lookup(load_corpus_json(corpus))
     cfg.openai.embedding_model = _infer_embed_model(matrix.shape[1], cfg.openai.embedding_model)
 
@@ -144,17 +151,35 @@ def cli_qa_console(
         if not question:
             break
 
-        q_vec = embed_query(question, cfg=cfg.openai)
-        if len(q_vec) != matrix.shape[1]:
-            print("Dimension mismatch mellem query og embeddings.", file=sys.stderr)
-            continue
-        idx, scores = topk_dot(matrix, q_vec, topk)
+        vec_idx = np.array([], dtype=int)
+        vec_scores = np.array([], dtype=np.float32)
+        bm_idx = np.array([], dtype=int)
+        bm_scores = np.array([], dtype=np.float32)
+
+        if retriever != "bm25":
+            q_vec = embed_query(question, cfg=cfg.openai)
+            if len(q_vec) != matrix.shape[1]:
+                print("Dimension mismatch mellem query og embeddings.", file=sys.stderr)
+                continue
+            vec_idx, vec_scores = topk_dot(matrix, q_vec, topk)
+
+        if bm25_index and retriever != "vector":
+            bm_idx, bm_scores = bm25_index.search(question, k=topk)
+
+        if retriever == "vector":
+            final_idx, final_scores = vec_idx, vec_scores
+        elif retriever == "bm25":
+            final_idx, final_scores = bm_idx, bm_scores
+        else:
+            rank_lists = [arr for arr in [vec_idx, bm_idx] if arr.size > 0]
+            final_idx, final_scores = reciprocal_rank_fusion(rank_lists, k=topk)
+
         chunks = []
         shown_scores = []
-        for i, score in zip(idx, scores):
-            if score < min_score:
+        for i, score in zip(final_idx, final_scores):
+            if retriever == "vector" and score < min_score:
                 continue
-            md = meta_rows[i]
+            md = meta_rows[int(i)]
             key = (md.get("doc_id"), md.get("section_index"))
             sec = lut.get(key)
             if not sec:
@@ -181,7 +206,13 @@ def cli_qa_console(
         print(answer)
         print("\n- KILDER -")
         for idx, (sec, score) in enumerate(shown_sources, 1):
-            print(f"[{idx}] {sec.get('title')} - {sec.get('heading')} <{sec.get('link')}> <{score:.4f}>")
+            if retriever == "hybrid":
+                score_label = f"rrf={score:.4f}"
+            elif retriever == "bm25":
+                score_label = f"bm25={score:.4f}"
+            else:
+                score_label = f"emb={score:.4f}"
+            print(f"[{idx}] {sec.get('title')} - {sec.get('heading')} <{sec.get('link')}> <{score_label}>")
 
 
 def write_jsonl(path: Path, items):
